@@ -1,0 +1,31 @@
+name: Generate Snake Animation
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # roda todo dia à meia-noite (UTC)
+  workflow_dispatch: {} # permite rodar manualmente também
+  push:
+    branches:
+      - main
+
+jobs:
+  generate:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gerar SVG da cobra
+        uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/github-contribution-grid-snake.svg?color_snake=%23171a4a&color_dots=%232f2c79,%23bd0003,%23ff0000
+            dist/github-contribution-grid-snake-dark.svg?color_snake=%23171a4a&color_dots=%232f2c79,%23bd0003,%23ff0000
+
+      - name: Publicar no branch output
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
